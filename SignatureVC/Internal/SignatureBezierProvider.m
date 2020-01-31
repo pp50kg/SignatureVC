@@ -1,48 +1,34 @@
-/**
- Copyright (c) 2017 Uber Technologies, Inc.
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
- */
+//
+//  SignatureBezierProvider.m
+//  SignatureObjCDemo
+//
+//  Created by 金融研發一部-許祐禎 on 2020/1/15.
+//  Copyright © 2020 金融研發一部-許祐禎. All rights reserved.
+//
 
-#import "UBSignatureBezierProvider.h"
-#import "UBCGPointHelpers.h"
+#import "SignatureBezierProvider.h"
+#import "CGPointHelpers.h"
 
 /// The weight of a signature-styled dot.
-static CGFloat const kUBDotSignatureWeight = 3.0f;
+static CGFloat const kDotSignatureWeight = 3.0f;
 
 /// If a new point is added without being at least this distance from the previous point, it will be ignored.
-static CGFloat const kUBTouchDistanceThreshold = 2.0f;
+static CGFloat const kTouchDistanceThreshold = 2.0f;
 
-static NSUInteger const kUBMaxPointIndex = 3;
+static NSUInteger const kMaxPointIndex = 3;
 
-@interface UBSignatureBezierProvider ()
+@interface SignatureBezierProvider ()
 
-@property (nonatomic) UBWeightedPoint point0;
-@property (nonatomic) UBWeightedPoint point1;
-@property (nonatomic) UBWeightedPoint point2;
-@property (nonatomic) UBWeightedPoint point3;
+@property (nonatomic) WeightedPoint point0;
+@property (nonatomic) WeightedPoint point1;
+@property (nonatomic) WeightedPoint point2;
+@property (nonatomic) WeightedPoint point3;
 
 @property (nonatomic) NSUInteger nextPointIndex;
 
 @end
 
-@implementation UBSignatureBezierProvider
+@implementation SignatureBezierProvider
 
 #pragma mark - Public
 
@@ -50,19 +36,19 @@ static NSUInteger const kUBMaxPointIndex = 3;
 {
     BOOL isFirstPoint = (self.nextPointIndex == 0);
     if (isFirstPoint) {
-        [self _startNewLineFromWeightedPoint:(UBWeightedPoint){point, kUBDotSignatureWeight}];
+        [self _startNewLineFromWeightedPoint:(WeightedPoint){point, kDotSignatureWeight}];
     } else {
         CGPoint previousPoint = [self weightedPointAtIndex:self.nextPointIndex - 1].point;
-        if (UBCGPointDistanceBetweenPoints(point, previousPoint) < kUBTouchDistanceThreshold) {
+        if (CGPointDistanceBetweenPoints(point, previousPoint) < kTouchDistanceThreshold) {
             return;
         }
-        BOOL isStartPointOfNextLine = (self.nextPointIndex > kUBMaxPointIndex);
+        BOOL isStartPointOfNextLine = (self.nextPointIndex > kMaxPointIndex);
         if (isStartPointOfNextLine) {
             [self _finalizeBezierPathWithNextLineStartPoint:point];
             [self _startNewLineFromWeightedPoint:[self weightedPointAtIndex:3]];
         }
         
-        UBWeightedPoint weightedPoint = {point, [self.class _signatureWeightForLineBetweenPoint:previousPoint andPoint:point]};
+        WeightedPoint weightedPoint = {point, [self.class _signatureWeightForLineBetweenPoint:previousPoint andPoint:point]};
         [self _addWeightedPointToLine:weightedPoint];
     }
     
@@ -83,13 +69,13 @@ static NSUInteger const kUBMaxPointIndex = 3;
 
 #pragma mark - Private
 
-- (void)_startNewLineFromWeightedPoint:(UBWeightedPoint)point
+- (void)_startNewLineFromWeightedPoint:(WeightedPoint)point
 {
     [self _setWeightedPoint:point forPointIndex:0];
     self.nextPointIndex = 1;
 }
 
-- (void)_addWeightedPointToLine:(UBWeightedPoint)point
+- (void)_addWeightedPointToLine:(WeightedPoint)point
 {
     [self _setWeightedPoint:point forPointIndex:self.nextPointIndex];
     self.nextPointIndex++;
@@ -102,7 +88,7 @@ static NSUInteger const kUBMaxPointIndex = 3;
      to equal the average of the points either side of it.
      */
     CGPoint touchPoint2 = [self weightedPointAtIndex:2].point;
-    UBWeightedPoint newPoint3 = {UBCGPointAveragePoints(touchPoint2, nextStartPoint), 0};
+    WeightedPoint newPoint3 = {CGPointAveragePoints(touchPoint2, nextStartPoint), 0};
     newPoint3.weight = [self.class _signatureWeightForLineBetweenPoint:touchPoint2 andPoint:newPoint3.point];
     [self _setWeightedPoint:newPoint3 forPointIndex:3];
     
@@ -113,13 +99,13 @@ static NSUInteger const kUBMaxPointIndex = 3;
 {
     switch (index) {
         case 0:
-            return [UIBezierPath ub_dotWithWeightedPoint:[self weightedPointAtIndex:0]];
+            return [UIBezierPath dotWithWeightedPoint:[self weightedPointAtIndex:0]];
         case 1:
-            return [UIBezierPath ub_lineWithWeightedPointA:[self weightedPointAtIndex:0] pointB:[self weightedPointAtIndex:1]];
+            return [UIBezierPath lineWithWeightedPointA:[self weightedPointAtIndex:0] pointB:[self weightedPointAtIndex:1]];
         case 2:
-            return [UIBezierPath ub_quadCurveWithWeightedPointA:[self weightedPointAtIndex:0] pointB:[self weightedPointAtIndex:1] pointC:[self weightedPointAtIndex:2]];
+            return [UIBezierPath quadCurveWithWeightedPointA:[self weightedPointAtIndex:0] pointB:[self weightedPointAtIndex:1] pointC:[self weightedPointAtIndex:2]];
         case 3:
-            return [UIBezierPath ub_bezierCurveWithWeightedPointA:[self weightedPointAtIndex:0] pointB:[self weightedPointAtIndex:1] pointC:[self weightedPointAtIndex:2] pointD:[self weightedPointAtIndex:3]];
+            return [UIBezierPath bezierCurveWithWeightedPointA:[self weightedPointAtIndex:0] pointB:[self weightedPointAtIndex:1] pointC:[self weightedPointAtIndex:2] pointD:[self weightedPointAtIndex:3]];
         default:
             return nil;
     }
@@ -127,7 +113,7 @@ static NSUInteger const kUBMaxPointIndex = 3;
 
 #pragma mark - Points index set/get
 
-- (void)_setWeightedPoint:(UBWeightedPoint)point forPointIndex:(NSUInteger)index
+- (void)_setWeightedPoint:(WeightedPoint)point forPointIndex:(NSUInteger)index
 {
     switch (index) {
         case 0:
@@ -147,7 +133,7 @@ static NSUInteger const kUBMaxPointIndex = 3;
     }
 }
 
-- (UBWeightedPoint)weightedPointAtIndex:(NSUInteger)index
+- (WeightedPoint)weightedPointAtIndex:(NSUInteger)index
 {
     switch (index) {
         case 0:
@@ -159,7 +145,7 @@ static NSUInteger const kUBMaxPointIndex = 3;
         case 3:
             return self.point3;
         default:
-            return (UBWeightedPoint){CGPointZero, 0.0f};
+            return (WeightedPoint){CGPointZero, 0.0f};
     }
 }
 
@@ -187,7 +173,7 @@ static NSUInteger const kUBMaxPointIndex = 3;
 
 + (CGFloat)_signatureWeightForLineBetweenPoint:(CGPoint)pointA andPoint:(CGPoint)pointB
 {
-    CGFloat length = UBCGPointDistanceBetweenPoints(pointA, pointB);
+    CGFloat length = CGPointDistanceBetweenPoints(pointA, pointB);
     
     /**
      The is the maximum length that will vary weight. Anything higher will return the same weight.
@@ -209,3 +195,4 @@ static NSUInteger const kUBMaxPointIndex = 3;
 }
 
 @end
+

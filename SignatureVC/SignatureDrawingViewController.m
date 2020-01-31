@@ -1,33 +1,19 @@
-/**
- Copyright (c) 2017 Uber Technologies, Inc.
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
- */
+//
+//  SignatureDrawingViewController.m
+//  SignatureObjCDemo
+//
+//  Created by 金融研發一部-許祐禎 on 2020/1/15.
+//  Copyright © 2020 金融研發一部-許祐禎. All rights reserved.
+//
 
-#import "UBSignatureDrawingViewController.h"
-#import "UBSignatureDrawingModelAsync.h"
+#import "SignatureDrawingViewController.h"
+#import "SignatureDrawingModelAsync.h"
 
-@interface UBSignatureDrawingViewController ()
+@interface SignatureDrawingViewController ()
 
 @property (nonatomic) BOOL isEmpty;
 
-@property (nonatomic, readonly) UBSignatureDrawingModelAsync *model;
+@property (nonatomic, readonly) SignatureDrawingModelAsync *model;
 @property (nonatomic, readonly) NSOperationQueue *modelOperationQueue;
 @property (nonatomic) CAShapeLayer *bezierPathLayer;
 
@@ -37,7 +23,7 @@
 
 @end
 
-@implementation UBSignatureDrawingViewController
+@implementation SignatureDrawingViewController
 
 #pragma mark - Init
 
@@ -52,7 +38,7 @@
         _presetImage = image;
         _isEmpty = (!image);
         
-        _model = [[UBSignatureDrawingModelAsync alloc] init];
+        _model = [[SignatureDrawingModelAsync alloc] init];
     }
     
     return self;
@@ -118,11 +104,11 @@
     // Constraints
     self.imageView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addConstraints:@[
-                           [NSLayoutConstraint constraintWithItem:self.imageView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1 constant:0],
-                           [NSLayoutConstraint constraintWithItem:self.imageView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1 constant:0],
-                           [NSLayoutConstraint constraintWithItem:self.imageView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1 constant:0],
-                           [NSLayoutConstraint constraintWithItem:self.imageView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeRight multiplier:1 constant:0]
-                           ]];
+                                [NSLayoutConstraint constraintWithItem:self.imageView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1 constant:0],
+                                [NSLayoutConstraint constraintWithItem:self.imageView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1 constant:0],
+                                [NSLayoutConstraint constraintWithItem:self.imageView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1 constant:0],
+                                [NSLayoutConstraint constraintWithItem:self.imageView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeRight multiplier:1 constant:0]
+                                ]];
     
 }
 

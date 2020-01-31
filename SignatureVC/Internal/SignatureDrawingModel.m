@@ -1,39 +1,25 @@
-/**
- Copyright (c) 2017 Uber Technologies, Inc.
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
- */
+//
+//  SignatureDrawingModel.m
+//  SignatureObjCDemo
+//
+//  Created by 金融研發一部-許祐禎 on 2020/1/15.
+//  Copyright © 2020 金融研發一部-許祐禎. All rights reserved.
+//
 
-#import "UBSignatureDrawingModel.h"
-#import "UBSignatureBezierProvider.h"
+#import "SignatureDrawingModel.h"
+#import "SignatureBezierProvider.h"
 
-@interface UBSignatureDrawingModel () <UBSignatureBezierProviderDelegate>
+@interface SignatureDrawingModel () <SignatureBezierProviderDelegate>
 
 @property (nonatomic) UIImage *signatureImage;
 @property (nonatomic) UIBezierPath *temporarySignatureBezierPath;
 
-@property (nonatomic, readonly) UBSignatureBezierProvider *bezierProvider;
+@property (nonatomic, readonly) SignatureBezierProvider *bezierProvider;
 
 @end
 
 
-@implementation UBSignatureDrawingModel
+@implementation SignatureDrawingModel
 
 #pragma mark - Initializers
 
@@ -47,10 +33,10 @@
     if (self = [super init]) {
         _imageSize = imageSize;
         
-        _bezierProvider = [[UBSignatureBezierProvider alloc] init];
+        _bezierProvider = [[SignatureBezierProvider alloc] init];
         _bezierProvider.delegate = self;
     }
-
+    
     return self;
 }
 
@@ -116,14 +102,14 @@
     return [self.class _imageWithImage:self.signatureImage bezierPath:bezierPath color:self.signatureColor size:self.imageSize];
 }
 
-#pragma mark - <UBSignatureBezierProviderDelegate>
+#pragma mark - <SignatureBezierProviderDelegate>
 
-- (void)signatureBezierProvider:(UBSignatureBezierProvider *)provider updatedTemporarySignatureBezier:(UIBezierPath *)temporarySignatureBezier
+- (void)signatureBezierProvider:(SignatureBezierProvider *)provider updatedTemporarySignatureBezier:(UIBezierPath *)temporarySignatureBezier
 {
     self.temporarySignatureBezierPath = temporarySignatureBezier;
 }
 
-- (void)signatureBezierProvider:(UBSignatureBezierProvider *)provider generatedFinalizedSignatureBezier:(UIBezierPath *)finalizedSignatureBezier
+- (void)signatureBezierProvider:(SignatureBezierProvider *)provider generatedFinalizedSignatureBezier:(UIBezierPath *)finalizedSignatureBezier
 {
     self.signatureImage = [self _signatureImageAddingBezierPath:finalizedSignatureBezier];
 }
