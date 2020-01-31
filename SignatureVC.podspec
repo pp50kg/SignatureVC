@@ -7,6 +7,8 @@ s.license      = { :type => "MIT", :file => "LICENSE" }
 s.author       = { "AdamPP" => "adamhsuapple@gmail.com" }
 s.platform     = :ios, "8.0"
 s.source       = { :git => "https://github.com/pp50kg/SignatureVC.git", :tag => s.version }
-s.source_files = 'Sources/**/*.swift'
+s.source_files = "SignatureVC/**/*.{h,m}"
+s.resource = "SignatureVC/**/*.{xib,json,bundle}"
+s.requires_arc = true
 s.swift_version = '4.0'
 end
